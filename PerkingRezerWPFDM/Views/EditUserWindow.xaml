@@ -1,0 +1,23 @@
+﻿<Window x:Class="PerkingRezerWPFDM.Views.EditUserWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Edytuj użytkownika" Height="300" Width="400">
+    <Grid>
+        <StackPanel Margin="10">
+            <TextBlock Text="Imię:" />
+            <TextBox Text="{Binding SelectedUser.FirstName}" />
+
+            <TextBlock Text="Nazwisko:" />
+            <TextBox Text="{Binding SelectedUser.LastName}" />
+
+            <TextBlock Text="Login:" />
+            <TextBox Text="{Binding SelectedUser.Username}" IsEnabled="False" />
+
+            <TextBlock Text="Hasło:" />
+            <PasswordBox x:Name="PasswordBox" />
+
+            <TextBlock Text="" />
+            <Button Content="Zapisz zmiany" Command="{Binding SaveUserCommand}" />
+        </StackPanel>
+    </Grid>
+</Window>

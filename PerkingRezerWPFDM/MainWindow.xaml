@@ -1,0 +1,198 @@
+﻿<Window x:Class="PerkingRezerWPFDM.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:PerkingRezerWPFDM.Converters"
+        Title="System Parkingowy" Height="700" Width="1000">
+
+    <Window.Resources>
+        <local:SelectedToColorConverter x:Key="SelectedToColorConverter"/>
+    </Window.Resources>
+    
+    
+
+    <Grid>
+        <TabControl x:Name="MainTabControl">
+
+            <!-- 🛠️ Zakładka Użytkownicy (dla Admina) -->
+            <TabItem x:Name="UsersTab" Header="Użytkownicy">
+                <Grid Margin="10">
+                    <StackPanel>
+                        <TextBlock Text="Lista Użytkowników" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                        <DataGrid ItemsSource="{Binding UserViewModel.Users}" AutoGenerateColumns="False"
+                                  SelectedItem="{Binding UserViewModel.SelectedUser, Mode=TwoWay}" 
+                                  Height="200" Margin="0,5"
+                                  IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Login" Binding="{Binding Username}" Width="150"/>
+                                <DataGridTextColumn Header="Imię" Binding="{Binding FirstName}" Width="150"/>
+                                <DataGridTextColumn Header="Nazwisko" Binding="{Binding LastName}" Width="150"/>
+                                <DataGridTextColumn Header="Rola" Binding="{Binding Role}" Width="150"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                            <Button Content="Edytuj" Command="{Binding UserViewModel.EditUserCommand}" 
+                                    IsEnabled="{Binding UserViewModel.SelectedUser, Converter={StaticResource NullToBoolConverter}}" 
+                                    Width="120"/>
+                            <Button Content="Usuń" Command="{Binding UserViewModel.DeleteUserCommand}" 
+                                    IsEnabled="{Binding UserViewModel.SelectedUser, Converter={StaticResource NullToBoolConverter}}" 
+                                    Width="120"/>
+                            <Button Content="Dodaj" Command="{Binding UserViewModel.OpenAddUserWindowCommand}" 
+                                    Width="120"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- 🚗 Zakładka Pojazdy -->
+            <TabItem Header="Pojazdy">
+                <Grid Margin="10">
+                    <StackPanel>
+                        <TextBlock Text="Lista Pojazdów" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+
+                        <!-- Tabela do wyświetlania pojazdów -->
+                        <DataGrid ItemsSource="{Binding Vehicles}" AutoGenerateColumns="False"
+                                  SelectedItem="{Binding SelectedVehicle, Mode=TwoWay}" 
+                                  Height="200" Margin="0,5"
+                                  IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Numer Rejestracyjny" Binding="{Binding LicensePlate}" Width="150"/>
+                                <DataGridTextColumn Header="Marka" Binding="{Binding Brand}" Width="150"/>
+                                <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="150"/>
+                                <DataGridTextColumn Header="Rodzaj Pojazdu" Binding="{Binding VehicleType}" Width="150"/>
+                                <DataGridTextColumn Header="Rodzaj Paliwa" Binding="{Binding FuelType}" Width="150"/>
+                                <DataGridTextColumn Header="Rocznik" Binding="{Binding Year}" Width="100"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                            <Button Content="Dodaj Pojazd" Command="{Binding VehicleViewModel.AddVehicleCommand}" Margin="5"/>
+                            <Button Content="Edytuj Pojazd" Command="{Binding VehicleViewModel.EditVehicleCommand}" Margin="5" 
+                                    IsEnabled="{Binding VehicleViewModel.SelectedVehicle, Converter={StaticResource NullToBoolConverter}}"/>
+                            <Button Content="Usuń Pojazd" Command="{Binding VehicleViewModel.DeleteVehicleCommand}" Margin="5" 
+                                    IsEnabled="{Binding VehicleViewModel.SelectedVehicle, Converter={StaticResource NullToBoolConverter}}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- 🅿️ Zakładka Rezerwacji Miejsc Parkingowych -->
+            <TabItem Header="Miejsca Parkingowe">
+                <Grid Margin="10">
+                    <StackPanel>
+                        <TextBlock Text="Wybierz dzień i godziny" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <DatePicker SelectedDate="{Binding ReservationViewModel.SelectedDate, Mode=TwoWay}" 
+                                        DisplayDateStart="{x:Static sys:DateTime.Today}" 
+                                        Width="150" />
+
+                            <ComboBox ItemsSource="{Binding ReservationViewModel.AvailableHours}" 
+                                      SelectedItem="{Binding ReservationViewModel.SelectedStartHour}" 
+                                      Width="60" Margin="10,0,0,0"/>
+
+                            <ComboBox ItemsSource="{Binding ReservationViewModel.AvailableMinutes}" 
+                                      SelectedItem="{Binding ReservationViewModel.SelectedStartMinute}" 
+                                      Width="60" Margin="5,0,0,0"/>
+
+                            <TextBlock Text=" do " VerticalAlignment="Center" Margin="10,0,0,0"/>
+
+                            <ComboBox ItemsSource="{Binding ReservationViewModel.AvailableHours}" 
+                                      SelectedItem="{Binding ReservationViewModel.SelectedEndHour}" 
+                                      Width="60" Margin="5,0,0,0"/>
+
+                            <ComboBox ItemsSource="{Binding ReservationViewModel.AvailableMinutes}" 
+                                      SelectedItem="{Binding ReservationViewModel.SelectedEndMinute}" 
+                                      Width="60" Margin="5,0,0,0"/>
+
+                            <TextBlock Text="{Binding ReservationViewModel.ReservationDuration}" 
+                                       VerticalAlignment="Center" Margin="10,0,0,0"/>
+                        </StackPanel>
+
+                        <!-- 🚗 Wybór miejsca parkingowego -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                            <TextBlock Text="Strefa:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <ComboBox ItemsSource="{Binding ReservationViewModel.ParkingZones}" 
+                                      SelectedItem="{Binding ReservationViewModel.SelectedZone}" 
+                                      Width="60"/>
+
+                            <TextBlock Text="Numer miejsca:" VerticalAlignment="Center" Margin="10,0,5,0"/>
+                            <ComboBox ItemsSource="{Binding ReservationViewModel.ParkingNumbers}" 
+                                      SelectedItem="{Binding ReservationViewModel.SelectedNumber}" 
+                                      Width="60"/>
+                        </StackPanel>
+
+                        <!-- 🚙 Wybór pojazdu -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                            <TextBlock Text="Pojazd:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <ComboBox ItemsSource="{Binding ReservationViewModel.UserVehicles}" 
+                                      DisplayMemberPath="LicensePlate" 
+                                      SelectedItem="{Binding ReservationViewModel.SelectedVehicle}" 
+                                      Width="150"/>
+                        </StackPanel>
+
+                        <!-- ✅ Przycisk Zarezerwuj -->
+                        <Button Content="Zarezerwuj" Command="{Binding ReservationViewModel.ReserveSpotCommand}" Width="120" Margin="10,0,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- 📅 Zakładka Rezerwacje -->
+            <TabItem x:Name="ReservationsTab" Header="Rezerwacje">
+                <Grid Margin="10">
+                    <StackPanel>
+                        <TextBlock Text="Twoje Rezerwacje" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                        <DataGrid ItemsSource="{Binding Reservations}" SelectedItem="{Binding SelectedReservation}" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Miejsce parkingowe" Binding="{Binding ParkingSpot}" />
+                                <DataGridTextColumn Header="Numer rejestracyjny" Binding="{Binding LicensePlate}" />
+                                <DataGridTextColumn Header="Dzień rezerwacji" Binding="{Binding ReservationDate}" />
+                                <DataGridTextColumn Header="Godzina rozpoczęcia" Binding="{Binding StartTime}" />
+                                <DataGridTextColumn Header="Godzina zakończenia" Binding="{Binding EndTime}" />
+                                <DataGridTextColumn Header="Łączny czas rezerwacji" Binding="{Binding TotalDuration}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                            <Button Content="Edytuj godzinę" Command="{Binding EditReservationCommand}" Margin="5"/>
+                            <Button Content="Usuń rezerwację" Command="{Binding DeleteReservationCommand}" Margin="5"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+           
+            <TabItem x:Name="UserSettingsTab" Header="Ustawienia użytkownika">
+                <Grid>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Button Content="Zmień hasło" Width="150" Height="40" Margin="10"
+                    Click="ChangePassword_Click"/>
+                        <Button Content="Wyloguj" Width="150" Height="40" Margin="10"
+                    Click="LogoutButton_Click"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <TabItem x:Name="AdminReservationsTab" Header="Log rezerwacji">
+                <Grid Margin="10">
+                    <StackPanel>
+                        <TextBlock Text="Log rezerwacji użytkowników" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                        <DataGrid ItemsSource="{Binding AllReservations}" AutoGenerateColumns="False" IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Użytkownik" Binding="{Binding Username}" />
+                                <DataGridTextColumn Header="Miejsce parkingowe" Binding="{Binding ParkingSpot}" />
+                                <DataGridTextColumn Header="Dzień rezerwacji" Binding="{Binding ReservationDate}" />
+                                <DataGridTextColumn Header="Godzina rozpoczęcia" Binding="{Binding StartTime}" />
+                                <DataGridTextColumn Header="Godzina zakończenia" Binding="{Binding EndTime}" />
+                                <DataGridTextColumn Header="Pojazd" Binding="{Binding Vehicle}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+
+
+        </TabControl>
+    </Grid>
+</Window>
